@@ -45,8 +45,8 @@ export default function FeedbackTable({ feedbacks, isAdmin = false, onStatusChan
                     {categoryLabel[fb.category]}
                   </span>
                 </td>
-                <td className="py-3 pr-3 font-medium text-navy max-w-[160px]">{fb.title}</td>
-                <td className="py-3 pr-3 text-slate-500 max-w-[260px]">{fb.message}</td>
+                <td className="py-3 pr-3 font-medium text-navy max-w-[160px] break-words">{fb.title}</td>
+                <td className="py-3 pr-3 text-slate-500 max-w-[260px] break-words">{fb.message}</td>
                 <td className="py-3 pr-3">
                   {isAdmin ? (
                     <select

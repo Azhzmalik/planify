@@ -4,14 +4,18 @@ import { authService } from "../services/authService";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  // Pakai sessionStorage (bukan localStorage) supaya sesi login tidak
+  // dibagikan antar tab browser. Tiap tab baru akan mulai tanpa sesi,
+  // sehingga membuka link di tab baru mengharuskan login ulang, dan
+  // logout di satu tab tidak ikut logout tab lain.
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("planify_user");
+    const stored = sessionStorage.getItem("planify_user");
     return stored ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("planify_token");
+    const token = sessionStorage.getItem("planify_token");
     if (!token) {
       setLoading(false);
       return;
@@ -21,11 +25,11 @@ export function AuthProvider({ children }) {
       .getMe()
       .then((freshUser) => {
         setUser(freshUser);
-        localStorage.setItem("planify_user", JSON.stringify(freshUser));
+        sessionStorage.setItem("planify_user", JSON.stringify(freshUser));
       })
       .catch(() => {
-        localStorage.removeItem("planify_token");
-        localStorage.removeItem("planify_user");
+        sessionStorage.removeItem("planify_token");
+        sessionStorage.removeItem("planify_user");
         setUser(null);
       })
       .finally(() => setLoading(false));
@@ -33,23 +37,23 @@ export function AuthProvider({ children }) {
 
   async function login(email, password) {
     const data = await authService.login(email, password);
-    localStorage.setItem("planify_token", data.token);
-    localStorage.setItem("planify_user", JSON.stringify(data.user));
+    sessionStorage.setItem("planify_token", data.token);
+    sessionStorage.setItem("planify_user", JSON.stringify(data.user));
     setUser(data.user);
     return data.user;
   }
 
   async function register(name, email, password) {
     const data = await authService.register(name, email, password);
-    localStorage.setItem("planify_token", data.token);
-    localStorage.setItem("planify_user", JSON.stringify(data.user));
+    sessionStorage.setItem("planify_token", data.token);
+    sessionStorage.setItem("planify_user", JSON.stringify(data.user));
     setUser(data.user);
     return data.user;
   }
 
   function logout() {
-    localStorage.removeItem("planify_token");
-    localStorage.removeItem("planify_user");
+    sessionStorage.removeItem("planify_token");
+    sessionStorage.removeItem("planify_user");
     setUser(null);
   }
 

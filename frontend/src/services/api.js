@@ -5,8 +5,10 @@ const api = axios.create({
 });
 
 // Sisipkan token JWT ke setiap request jika ada
+// Catatan: pakai sessionStorage (bukan localStorage) supaya tiap tab browser
+// punya sesi login sendiri-sendiri, tidak saling terhubung antar tab.
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("planify_token");
+  const token = sessionStorage.getItem("planify_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -18,8 +20,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("planify_token");
-      localStorage.removeItem("planify_user");
+      sessionStorage.removeItem("planify_token");
+      sessionStorage.removeItem("planify_user");
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
