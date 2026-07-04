@@ -1,10 +1,20 @@
-// Format waktu ke format jam:menit lokal (contoh: 14:30)
+// Format waktu ke format jam:menit (contoh: 14.30)
+// PENTING: task start_time/end_time disimpan sebagai kolom TIMESTAMP (tanpa timezone)
+// dan server (Vercel) berjalan di UTC. Karena itu, memakai toLocaleTimeString (yang
+// otomatis konversi ke timezone browser/WIB) akan menggeser jam +7 dari yang diinput.
+// Solusinya: ambil komponen jam/menit apa adanya (UTC getters) tanpa konversi ulang,
+// supaya jam yang ditampilkan sama persis dengan yang diinput user.
 export function formatTime(dateInput) {
   const date = new Date(dateInput);
-  return date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  const hh = String(date.getUTCHours()).padStart(2, "0");
+  const mm = String(date.getUTCMinutes()).padStart(2, "0");
+  return `${hh}.${mm}`;
 }
 
 // Format tanggal singkat (contoh: 2 Jul 2026)
+// Dipakai untuk created_at (dibuat otomatis via NOW() di database, sudah berupa
+// waktu absolut yang benar), jadi di sini konversi ke timezone lokal browser
+// memang tepat dan TIDAK diubah.
 export function formatDate(dateInput) {
   const date = new Date(dateInput);
   return date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
