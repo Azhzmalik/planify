@@ -42,6 +42,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Planify API berjalan di http://localhost:${PORT}`);
-});
+
+// Kalau file ini dijalankan langsung (npm run dev / npm start di komputer sendiri),
+// jalankan server seperti biasa. Kalau di-import oleh Vercel sebagai serverless
+// function, bagian app.listen() ini dilewati otomatis (Vercel yang mengurus itu).
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Planify API berjalan di http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
